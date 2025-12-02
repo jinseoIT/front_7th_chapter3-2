@@ -1,5 +1,3 @@
-
-
 type Props = {
   products: any[];
   cart: any[];
