@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CartItem, Coupon } from "../../types";
 
 export const useCart = () => {
   const [totalItemCount, setTotalItemCount] = useState(0);
+
   const [cart, setCart] = useState<CartItem[]>(() => {
     const saved = localStorage.getItem("cart");
     if (saved) {
@@ -68,9 +69,21 @@ export const useCart = () => {
     };
   };
 
+  const removeFromCart = useCallback((productId: string) => {
+    setCart((prevCart) => prevCart.filter((item) => item.product.id !== productId));
+  }, []);
+
   useEffect(() => {
     const count = cart.reduce((sum, item) => sum + item.quantity, 0);
     setTotalItemCount(count);
+  }, [cart]);
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    } else {
+      localStorage.removeItem("cart");
+    }
   }, [cart]);
 
   return {
@@ -79,5 +92,6 @@ export const useCart = () => {
     setCart,
     calculateCartTotal,
     calculateItemTotal,
+    removeFromCart,
   };
 };

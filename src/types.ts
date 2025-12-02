@@ -19,7 +19,7 @@ export interface CartItem {
 export interface Coupon {
   name: string;
   code: string;
-  discountType: 'amount' | 'percentage';
+  discountType: "amount" | "percentage";
   discountValue: number;
 }
 
@@ -27,4 +27,9 @@ export interface Notification {
   id: string;
   message: string;
   type: "error" | "success" | "warning";
+}
+
+export interface ProductWithUI extends Product {
+  description?: string;
+  isRecommended?: boolean;
 }

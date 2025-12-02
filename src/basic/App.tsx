@@ -1,97 +1,31 @@
 import { useState, useCallback, useEffect } from "react";
-import { CartItem, Coupon, Notification, Product } from "../types";
+import { Coupon, Notification, Product, ProductWithUI } from "../types";
 import Header from "./components/Header";
 import ShoppingMallTemplate from "./components/ShoppingMall/Template";
 import AdminTemplate from "./components/Admin/Template";
 import Noti from "./components/Notification";
 import { useCart } from "./hooks/useCart";
-
-interface ProductWithUI extends Product {
-  description?: string;
-  isRecommended?: boolean;
-}
-
-// 초기 데이터
-const initialProducts: ProductWithUI[] = [
-  {
-    id: "p1",
-    name: "상품1",
-    price: 10000,
-    stock: 20,
-    discounts: [
-      { quantity: 10, rate: 0.1 },
-      { quantity: 20, rate: 0.2 },
-    ],
-    description: "최고급 품질의 프리미엄 상품입니다.",
-  },
-  {
-    id: "p2",
-    name: "상품2",
-    price: 20000,
-    stock: 20,
-    discounts: [{ quantity: 10, rate: 0.15 }],
-    description: "다양한 기능을 갖춘 실용적인 상품입니다.",
-    isRecommended: true,
-  },
-  {
-    id: "p3",
-    name: "상품3",
-    price: 30000,
-    stock: 20,
-    discounts: [
-      { quantity: 10, rate: 0.2 },
-      { quantity: 30, rate: 0.25 },
-    ],
-    description: "대용량과 고성능을 자랑하는 상품입니다.",
-  },
-];
-
-const initialCoupons: Coupon[] = [
-  {
-    name: "5000원 할인",
-    code: "AMOUNT5000",
-    discountType: "amount",
-    discountValue: 5000,
-  },
-  {
-    name: "10% 할인",
-    code: "PERCENT10",
-    discountType: "percentage",
-    discountValue: 10,
-  },
-];
+import useCoupon from "./hooks/useCoupons";
+import useProduct from "./hooks/useProducts";
 
 const App = () => {
-  const { cart, totalItemCount, setCart, calculateCartTotal, calculateItemTotal } = useCart();
-  const [products, setProducts] = useState<ProductWithUI[]>(() => {
-    const saved = localStorage.getItem("products");
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return initialProducts;
-      }
-    }
-    return initialProducts;
-  });
+  const addNotification = useCallback((message: string, type: "error" | "success" | "warning" = "success") => {
+    const id = Date.now().toString();
+    setNotifications((prev) => [...prev, { id, message, type }]);
 
-  const [coupons, setCoupons] = useState<Coupon[]>(() => {
-    const saved = localStorage.getItem("coupons");
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return initialCoupons;
-      }
-    }
-    return initialCoupons;
-  });
+    setTimeout(() => {
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+    }, 3000);
+  }, []);
 
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+  const { cart, totalItemCount, setCart, calculateCartTotal, calculateItemTotal, removeFromCart } = useCart();
+  const { products, setProducts } = useProduct();
+  const { coupons, selectedCoupon, setCoupons, setSelectedCoupon } = useCoupon(addNotification);
+
   const [isAdmin, setIsAdmin] = useState(false);
+  const [activeTab, setActiveTab] = useState<"products" | "coupons">("products");
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showCouponForm, setShowCouponForm] = useState(false);
-  const [activeTab, setActiveTab] = useState<"products" | "coupons">("products");
   const [showProductForm, setShowProductForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
@@ -135,31 +69,6 @@ const App = () => {
     return remaining;
   };
 
-  const addNotification = useCallback((message: string, type: "error" | "success" | "warning" = "success") => {
-    const id = Date.now().toString();
-    setNotifications((prev) => [...prev, { id, message, type }]);
-
-    setTimeout(() => {
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-    }, 3000);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("products", JSON.stringify(products));
-  }, [products]);
-
-  useEffect(() => {
-    localStorage.setItem("coupons", JSON.stringify(coupons));
-  }, [coupons]);
-
-  useEffect(() => {
-    if (cart.length > 0) {
-      localStorage.setItem("cart", JSON.stringify(cart));
-    } else {
-      localStorage.removeItem("cart");
-    }
-  }, [cart]);
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
@@ -196,10 +105,6 @@ const App = () => {
     },
     [cart, addNotification, getRemainingStock]
   );
-
-  const removeFromCart = useCallback((productId: string) => {
-    setCart((prevCart) => prevCart.filter((item) => item.product.id !== productId));
-  }, []);
 
   const updateQuantity = useCallback(
     (productId: string, newQuantity: number) => {
