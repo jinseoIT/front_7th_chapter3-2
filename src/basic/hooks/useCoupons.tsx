@@ -52,10 +52,6 @@ const useCoupons = ({ addNotification, calculateCartTotal }: Props) => {
     [selectedCoupon, addNotification]
   );
 
-  useEffect(() => {
-    localStorage.setItem("coupons", JSON.stringify(coupons));
-  }, [coupons]);
-
   return {
     coupons,
     selectedCoupon,

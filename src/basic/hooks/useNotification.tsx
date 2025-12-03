@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { Notification } from "../../types";
 
-const useNotificaton = (timeoutMs = 3000) => {
+const useNotification = (timeoutMs = 3000) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const addNotification = useCallback((message: string, type: "error" | "success" | "warning" = "success") => {
@@ -21,4 +21,4 @@ const useNotificaton = (timeoutMs = 3000) => {
   };
 };
 
-export default useNotificaton;
+export default useNotification;

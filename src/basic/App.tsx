@@ -6,12 +6,12 @@ import Noti from "./components/Notification";
 import { useCart } from "./hooks/useCart";
 import useCoupon from "./hooks/useCoupons";
 import useProduct from "./hooks/useProducts";
-import useNotificaton from "./hooks/useNotificaton";
+import useNotification from "./hooks/useNotification";
 import { useDebounce } from "./hooks/useDebounce";
 import { filterProducts } from "./utils/productCalculations";
 
 const App = () => {
-  const { notifications, setNotifications, addNotification } = useNotificaton();
+  const { notifications, setNotifications, addNotification } = useNotification();
   const {
     cart,
     totalItemCount,
