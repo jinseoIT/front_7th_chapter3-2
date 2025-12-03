@@ -69,8 +69,8 @@ const App = () => {
             coupons={coupons}
             activeTab={activeTab}
             getRemainingStock={getRemainingStock}
-            deleteCoupon={deleteCoupon}
             setActiveTab={setActiveTab}
+            deleteCoupon={deleteCoupon}
             deleteProduct={deleteProduct}
             addNotification={addNotification}
             addProduct={addProduct}

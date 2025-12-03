@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { CartItem, Coupon, Product, ProductWithUI } from "../../types";
+import { useLocalStorage } from "./useLocalStorage";
 
 type Props = {
   addNotification: (message: string, type?: "error" | "success" | "warning") => void;
@@ -8,17 +9,7 @@ type Props = {
 export const useCart = ({ addNotification }: Props) => {
   const [totalItemCount, setTotalItemCount] = useState(0);
 
-  const [cart, setCart] = useState<CartItem[]>(() => {
-    const saved = localStorage.getItem("cart");
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return [];
-      }
-    }
-    return [];
-  });
+  const [cart, setCart] = useLocalStorage<CartItem[]>("cart", []);
 
   const getMaxApplicableDiscount = (item: CartItem): number => {
     const { discounts } = item.product;
@@ -140,14 +131,6 @@ export const useCart = ({ addNotification }: Props) => {
   useEffect(() => {
     const count = cart.reduce((sum, item) => sum + item.quantity, 0);
     setTotalItemCount(count);
-  }, [cart]);
-
-  useEffect(() => {
-    if (cart.length > 0) {
-      localStorage.setItem("cart", JSON.stringify(cart));
-    } else {
-      localStorage.removeItem("cart");
-    }
   }, [cart]);
 
   return {
