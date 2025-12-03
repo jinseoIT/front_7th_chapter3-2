@@ -1,5 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
-import { ProductWithUI } from "../types";
+import { useState, useEffect } from "react";
 import Header from "./components/Header";
 import ShoppingMallTemplate from "./components/ShoppingMall/Template";
 import AdminTemplate from "./components/Admin/Template";
@@ -32,27 +31,8 @@ const App = () => {
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState<"products" | "coupons">("products");
-  const [showCouponForm, setShowCouponForm] = useState(false);
-  const [showProductForm, setShowProductForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-
-  // Admin
-  const [editingProduct, setEditingProduct] = useState<string | null>(null);
-  const [productForm, setProductForm] = useState({
-    name: "",
-    price: 0,
-    stock: 0,
-    description: "",
-    discounts: [] as Array<{ quantity: number; rate: number }>,
-  });
-
-  const [couponForm, setCouponForm] = useState({
-    name: "",
-    code: "",
-    discountType: "amount" as "amount" | "percentage",
-    discountValue: 0,
-  });
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -60,53 +40,6 @@ const App = () => {
     }, 500);
     return () => clearTimeout(timer);
   }, [searchTerm]);
-
-  const completeOrder = useCallback(() => {
-    const orderNumber = `ORD-${Date.now()}`;
-    addNotification(`주문이 완료되었습니다. 주문번호: ${orderNumber}`, "success");
-    setCart([]);
-    setSelectedCoupon(null);
-  }, [addNotification]);
-
-  const handleProductSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editingProduct && editingProduct !== "new") {
-      updateProduct(editingProduct, productForm);
-      setEditingProduct(null);
-    } else {
-      addProduct({
-        ...productForm,
-        discounts: productForm.discounts,
-      });
-    }
-    setProductForm({ name: "", price: 0, stock: 0, description: "", discounts: [] });
-    setEditingProduct(null);
-    setShowProductForm(false);
-  };
-
-  const handleCouponSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    addCoupon(couponForm);
-    setCouponForm({
-      name: "",
-      code: "",
-      discountType: "amount",
-      discountValue: 0,
-    });
-    setShowCouponForm(false);
-  };
-
-  const startEditProduct = (product: ProductWithUI) => {
-    setEditingProduct(product.id);
-    setProductForm({
-      name: product.name,
-      price: product.price,
-      stock: product.stock,
-      description: product.description || "",
-      discounts: product.discounts || [],
-    });
-    setShowProductForm(true);
-  };
 
   const totals = calculateCartTotal(selectedCoupon);
 
@@ -134,25 +67,15 @@ const App = () => {
           <AdminTemplate
             products={products}
             coupons={coupons}
-            showCouponForm={showCouponForm}
-            couponForm={couponForm}
             activeTab={activeTab}
-            showProductForm={showProductForm}
-            editingProduct={editingProduct}
-            productForm={productForm}
             getRemainingStock={getRemainingStock}
-            setShowCouponForm={setShowCouponForm}
-            setCouponForm={setCouponForm}
             deleteCoupon={deleteCoupon}
-            handleCouponSubmit={handleCouponSubmit}
             setActiveTab={setActiveTab}
-            setEditingProduct={setEditingProduct}
-            setProductForm={setProductForm}
-            setShowProductForm={setShowProductForm}
-            startEditProduct={startEditProduct}
             deleteProduct={deleteProduct}
-            handleProductSubmit={handleProductSubmit}
             addNotification={addNotification}
+            addProduct={addProduct}
+            updateProduct={updateProduct}
+            addCoupon={addCoupon}
           />
         ) : (
           <ShoppingMallTemplate
@@ -170,7 +93,8 @@ const App = () => {
             updateQuantity={updateQuantity}
             applyCoupon={applyCoupon}
             setSelectedCoupon={setSelectedCoupon}
-            completeOrder={completeOrder}
+            addNotification={addNotification}
+            setCart={setCart}
           />
         )}
       </main>

@@ -1,4 +1,5 @@
-import { Product } from "../../../types";
+import { useCallback } from "react";
+import { CartItem, Product } from "../../../types";
 import { formatPrice } from "../../utils/formatters";
 
 type Props = {
@@ -19,7 +20,8 @@ type Props = {
     totalBeforeDiscount: number;
     totalAfterDiscount: number;
   };
-  completeOrder: () => void;
+  addNotification: (message: string) => void;
+  setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
 };
 
 const ShoppingMallTemplate = ({
@@ -37,8 +39,16 @@ const ShoppingMallTemplate = ({
   applyCoupon,
   setSelectedCoupon,
   totals,
-  completeOrder,
+  addNotification,
+  setCart,
 }: Props) => {
+  const completeOrder = useCallback(() => {
+    const orderNumber = `ORD-${Date.now()}`;
+    addNotification(`주문이 완료되었습니다. 주문번호: ${orderNumber}`, "success");
+    setCart([]);
+    setSelectedCoupon(null);
+  }, [addNotification]);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
       <div className="lg:col-span-3">

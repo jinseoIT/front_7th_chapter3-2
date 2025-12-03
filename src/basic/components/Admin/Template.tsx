@@ -1,52 +1,96 @@
+import { useState } from "react";
 import { formatPrice } from "../../utils/formatters";
+import { Coupon, ProductWithUI } from "../../../types";
 
 type Props = {
   products: any;
   coupons: any;
-  showCouponForm: boolean;
-  setShowCouponForm: React.Dispatch<React.SetStateAction<boolean>>;
-  setCouponForm: React.Dispatch<React.SetStateAction<any>>;
   deleteCoupon: (id: number) => void;
-  handleCouponSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  couponForm: any;
   activeTab: string;
   getRemainingStock: (product: any) => number;
   setActiveTab: React.Dispatch<React.SetStateAction<string>>;
-  setEditingProduct: React.Dispatch<React.SetStateAction<string>>;
   setProductForm: React.Dispatch<React.SetStateAction<any>>;
-  setShowProductForm: React.Dispatch<React.SetStateAction<boolean>>;
-  startEditProduct: (product: any) => void;
   deleteProduct: (id: number) => void;
-  showProductForm: boolean;
-  handleProductSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  editingProduct: any;
   productForm: any;
   addNotification: (message: string) => void;
+  addProduct: (newProduct: Omit<ProductWithUI, "id">) => void;
+  updateProduct: (productId: string, updates: Partial<ProductWithUI>) => void;
+  addCoupon: (newCoupon: Coupon) => void;
 };
 
 const Template = ({
   products,
   coupons,
-  showCouponForm,
   getRemainingStock,
-  setShowCouponForm,
-  setCouponForm,
   deleteCoupon,
-  handleCouponSubmit,
-  couponForm,
   activeTab,
   setActiveTab,
-  setEditingProduct,
-  setProductForm,
-  setShowProductForm,
-  startEditProduct,
   deleteProduct,
-  showProductForm,
-  handleProductSubmit,
-  editingProduct,
-  productForm,
   addNotification,
+  addProduct,
+  updateProduct,
+  addCoupon,
 }: Props) => {
+  const [showCouponForm, setShowCouponForm] = useState(false);
+  const [showProductForm, setShowProductForm] = useState(false);
+
+  const [productForm, setProductForm] = useState({
+    name: "",
+    price: 0,
+    stock: 0,
+    description: "",
+    discounts: [] as Array<{ quantity: number; rate: number }>,
+  });
+
+  const [couponForm, setCouponForm] = useState({
+    name: "",
+    code: "",
+    discountType: "amount" as "amount" | "percentage",
+    discountValue: 0,
+  });
+
+  const [editingProduct, setEditingProduct] = useState<string | null>(null);
+
+  const startEditProduct = (product: ProductWithUI) => {
+    setEditingProduct(product.id);
+    setProductForm({
+      name: product.name,
+      price: product.price,
+      stock: product.stock,
+      description: product.description || "",
+      discounts: product.discounts || [],
+    });
+    setShowProductForm(true);
+  };
+
+  const handleProductSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingProduct && editingProduct !== "new") {
+      updateProduct(editingProduct, productForm);
+      setEditingProduct(null);
+    } else {
+      addProduct({
+        ...productForm,
+        discounts: productForm.discounts,
+      });
+    }
+    setProductForm({ name: "", price: 0, stock: 0, description: "", discounts: [] });
+    setEditingProduct(null);
+    setShowProductForm(false);
+  };
+
+  const handleCouponSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    addCoupon(couponForm);
+    setCouponForm({
+      name: "",
+      code: "",
+      discountType: "amount",
+      discountValue: 0,
+    });
+    setShowCouponForm(false);
+  };
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="mb-8">
