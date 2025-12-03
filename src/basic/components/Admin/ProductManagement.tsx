@@ -44,7 +44,6 @@ const ProductManagement = ({
   setProductForm,
   editingProduct,
   setEditingProduct,
-  addNotification,
   handlePriceChange,
   handlePriceBlur,
   handleStockChange,

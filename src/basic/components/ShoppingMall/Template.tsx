@@ -1,21 +1,21 @@
-import { CartItem, Product } from "../../../types";
+import { CartItem, Product, ProductWithUI, Coupon } from "../../../types";
 import Cart from "./Cart";
 import Products from "./Products";
 
 type Props = {
-  products: any[];
-  cart: any[];
-  coupons: any[];
-  filteredProducts: any[];
+  products: ProductWithUI[];
+  cart: CartItem[];
+  coupons: Coupon[];
+  filteredProducts: ProductWithUI[];
   debouncedSearchTerm: string;
-  getRemainingStock: (product: any) => number;
-  addToCart: (product: any) => void;
-  calculateItemTotal: (product: any) => number;
+  getRemainingStock: (product: ProductWithUI) => number;
+  addToCart: (product: ProductWithUI) => void;
+  calculateItemTotal: (item: CartItem) => number;
   removeFromCart: (productId: string) => void;
   updateQuantity: (products: Product[], productId: string, quantity: number) => void;
-  selectedCoupon: any;
-  applyCoupon: (coupon: any, cartTotal: number) => void;
-  setSelectedCoupon: (coupon: any) => void;
+  selectedCoupon: Coupon | null;
+  applyCoupon: (coupon: Coupon, cartTotal: number) => void;
+  setSelectedCoupon: (coupon: Coupon | null) => void;
   totals: {
     totalBeforeDiscount: number;
     totalAfterDiscount: number;
