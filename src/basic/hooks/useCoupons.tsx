@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Coupon } from "../../types";
 import { initialCoupons } from "../constants";
+import { useLocalStorage } from "./useLocalStorage";
 
 type Props = {
   addNotification: (message: string, type?: "error" | "success" | "warning") => void;
@@ -8,17 +9,8 @@ type Props = {
 };
 
 const useCoupons = ({ addNotification, calculateCartTotal }: Props) => {
-  const [coupons, setCoupons] = useState<Coupon[]>(() => {
-    const saved = localStorage.getItem("coupons");
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return initialCoupons;
-      }
-    }
-    return initialCoupons;
-  });
+  const [coupons, setCoupons] = useLocalStorage<Coupon[]>("coupons", initialCoupons);
+
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
   const addCoupon = useCallback(
