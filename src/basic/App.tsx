@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { Notification, ProductWithUI } from "../types";
+import { ProductWithUI } from "../types";
 import Header from "./components/Header";
 import ShoppingMallTemplate from "./components/ShoppingMall/Template";
 import AdminTemplate from "./components/Admin/Template";
@@ -7,17 +7,10 @@ import Noti from "./components/Notification";
 import { useCart } from "./hooks/useCart";
 import useCoupon from "./hooks/useCoupons";
 import useProduct from "./hooks/useProducts";
+import useNotificaton from "./hooks/useNotificaton";
 
 const App = () => {
-  const addNotification = useCallback((message: string, type: "error" | "success" | "warning" = "success") => {
-    const id = Date.now().toString();
-    setNotifications((prev) => [...prev, { id, message, type }]);
-
-    setTimeout(() => {
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-    }, 3000);
-  }, []);
-
+  const { notifications, setNotifications, addNotification } = useNotificaton();
   const {
     cart,
     totalItemCount,
@@ -39,7 +32,6 @@ const App = () => {
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState<"products" | "coupons">("products");
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showCouponForm, setShowCouponForm] = useState(false);
   const [showProductForm, setShowProductForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
