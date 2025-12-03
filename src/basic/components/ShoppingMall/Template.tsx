@@ -14,14 +14,14 @@ type Props = {
   removeFromCart: (productId: string) => void;
   updateQuantity: (products: Product[], productId: string, quantity: number) => void;
   selectedCoupon: any;
-  applyCoupon: (couponId: number) => void;
-  setSelectedCoupon: (couponId: number) => void;
+  applyCoupon: (coupon: any, cartTotal: number) => void;
+  setSelectedCoupon: (coupon: any) => void;
   totals: {
     totalBeforeDiscount: number;
     totalAfterDiscount: number;
   };
   addNotification: (message: string) => void;
-  setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
+  completeOrder: (onSuccess?: () => void) => void;
 };
 
 const ShoppingMallTemplate = ({
@@ -40,7 +40,7 @@ const ShoppingMallTemplate = ({
   setSelectedCoupon,
   totals,
   addNotification,
-  setCart,
+  completeOrder,
 }: Props) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -56,7 +56,6 @@ const ShoppingMallTemplate = ({
       <Cart
         products={products}
         cart={cart}
-        setCart={setCart}
         coupons={coupons}
         selectedCoupon={selectedCoupon}
         totals={totals}
@@ -66,6 +65,7 @@ const ShoppingMallTemplate = ({
         removeFromCart={removeFromCart}
         updateQuantity={updateQuantity}
         addNotification={addNotification}
+        completeOrder={completeOrder}
       />
     </div>
   );

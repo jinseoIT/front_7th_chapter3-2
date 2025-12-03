@@ -31,7 +31,7 @@ export const useCart = ({ addNotification }: Props) => {
 
   const addToCart = useCallback(
     (product: ProductWithUI) => {
-      const remainingStock = getRemainingStock(product);
+      const remainingStock = calcRemainingStock(product, cart);
       if (remainingStock <= 0) {
         addNotification("재고가 부족합니다!", "error");
         return;
@@ -56,7 +56,7 @@ export const useCart = ({ addNotification }: Props) => {
 
       addNotification("장바구니에 담았습니다", "success");
     },
-    [cart, addNotification, getRemainingStock]
+    [cart, addNotification]
   );
 
   const removeFromCart = useCallback((productId: string) => {
@@ -78,6 +78,18 @@ export const useCart = ({ addNotification }: Props) => {
     [addNotification]
   );
 
+  const completeOrder = useCallback(
+    (onSuccess?: () => void) => {
+      const orderNumber = `ORD-${Date.now()}`;
+      addNotification(`주문이 완료되었습니다. 주문번호: ${orderNumber}`, "success");
+      setCart([]);
+      if (onSuccess) {
+        onSuccess();
+      }
+    },
+    [addNotification, setCart]
+  );
+
   useEffect(() => {
     const count = cart.reduce((sum, item) => sum + item.quantity, 0);
     setTotalItemCount(count);
@@ -93,5 +105,6 @@ export const useCart = ({ addNotification }: Props) => {
     getRemainingStock,
     updateQuantity,
     removeFromCart,
+    completeOrder,
   };
 };

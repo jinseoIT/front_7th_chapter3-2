@@ -1,4 +1,5 @@
 import { CartItem, Coupon } from "../../types";
+import { applyCouponDiscount } from "./couponCalculations";
 
 /**
  * 상품의 최대 적용 가능한 할인율을 계산합니다
@@ -63,11 +64,7 @@ export const calculateCartTotal = (
 
   // 쿠폰 할인 적용
   if (selectedCoupon) {
-    if (selectedCoupon.discountType === "amount") {
-      totalAfterDiscount = Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
-    } else {
-      totalAfterDiscount = Math.round(totalAfterDiscount * (1 - selectedCoupon.discountValue / 100));
-    }
+    totalAfterDiscount = applyCouponDiscount(totalAfterDiscount, selectedCoupon);
   }
 
   return {

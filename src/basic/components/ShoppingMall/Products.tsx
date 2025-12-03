@@ -1,12 +1,12 @@
-import { ProductWithUI } from "../../../types";
+import { Product, ProductWithUI } from "../../../types";
 import ProductCard from "./ProductCard";
 
 type Props = {
   products: ProductWithUI[];
-  filteredProducts: any[];
+  filteredProducts: ProductWithUI[];
   debouncedSearchTerm: string;
-  getRemainingStock: (product: any) => number;
-  addToCart: (product: any) => void;
+  getRemainingStock: (product: Product) => number;
+  addToCart: (product: ProductWithUI) => void;
 };
 
 const Products = ({ products, filteredProducts, debouncedSearchTerm, getRemainingStock, addToCart }: Props) => {

@@ -13,19 +13,18 @@ type Props = {
     totalBeforeDiscount: number;
     totalAfterDiscount: number;
   };
-  applyCoupon: (coupon: Coupon) => void;
+  applyCoupon: (coupon: Coupon, cartTotal: number) => void;
   setSelectedCoupon: (coupon: Coupon | null) => void;
   calculateItemTotal: (item: CartItem) => number;
   removeFromCart: (productId: string) => void;
   updateQuantity: (products: Product[], productId: string, quantity: number) => void;
   addNotification: (message: string, type?: "error" | "success" | "warning") => void;
-  setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
+  completeOrder: (onSuccess?: () => void) => void;
 };
 
 const Cart = ({
   products,
   cart,
-  setCart,
   coupons,
   selectedCoupon,
   totals,
@@ -35,13 +34,13 @@ const Cart = ({
   removeFromCart,
   updateQuantity,
   addNotification,
+  completeOrder,
 }: Props) => {
-  const completeOrder = useCallback(() => {
-    const orderNumber = `ORD-${Date.now()}`;
-    addNotification(`주문이 완료되었습니다. 주문번호: ${orderNumber}`, "success");
-    setCart([]);
-    setSelectedCoupon(null);
-  }, [addNotification, setCart, setSelectedCoupon]);
+  const handleCompleteOrder = useCallback(() => {
+    completeOrder(() => {
+      setSelectedCoupon(null);
+    });
+  }, [completeOrder, setSelectedCoupon]);
 
   return (
     <div className="lg:col-span-1">
@@ -96,10 +95,10 @@ const Cart = ({
             <CouponSelector
               coupons={coupons}
               selectedCoupon={selectedCoupon}
-              onApplyCoupon={applyCoupon}
+              onApplyCoupon={(coupon) => applyCoupon(coupon, totals.totalBeforeDiscount)}
               onClearCoupon={() => setSelectedCoupon(null)}
             />
-            <OrderSummary totals={totals} onCompleteOrder={completeOrder} />
+            <OrderSummary totals={totals} onCompleteOrder={handleCompleteOrder} />
           </>
         )}
       </div>

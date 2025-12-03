@@ -22,13 +22,13 @@ const App = () => {
     getRemainingStock,
     removeFromCart,
     updateQuantity,
+    completeOrder,
   } = useCart({
     addNotification,
   });
   const { products, addProduct, updateProduct, deleteProduct } = useProduct({ addNotification });
   const { coupons, selectedCoupon, applyCoupon, setSelectedCoupon, addCoupon, deleteCoupon } = useCoupon({
     addNotification,
-    calculateCartTotal,
   });
 
   const [isAdmin, setIsAdmin] = useState(false);
@@ -85,7 +85,7 @@ const App = () => {
             applyCoupon={applyCoupon}
             setSelectedCoupon={setSelectedCoupon}
             addNotification={addNotification}
-            setCart={setCart}
+            completeOrder={completeOrder}
           />
         )}
       </main>

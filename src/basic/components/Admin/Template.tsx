@@ -1,9 +1,10 @@
-import { useState } from "react";
 import { formatPrice } from "../../utils/formatters";
 import { Coupon, ProductWithUI } from "../../../types";
 import ProductManagement from "./ProductManagement";
 import CouponManagement from "./CouponManagement";
 import AdminTabBar from "./AdminTabBar";
+import { useProductForm } from "../../hooks/useProductForm";
+import { useCouponForm } from "../../hooks/useCouponForm";
 
 type Props = {
   products: ProductWithUI[];
@@ -12,9 +13,7 @@ type Props = {
   activeTab: string;
   getRemainingStock: (product: ProductWithUI) => number;
   setActiveTab: React.Dispatch<React.SetStateAction<string>>;
-  setProductForm: React.Dispatch<React.SetStateAction<any>>;
   deleteProduct: (id: string) => void;
-  productForm: any;
   addNotification: (message: string, type?: "error" | "success" | "warning") => void;
   addProduct: (newProduct: Omit<ProductWithUI, "id">) => void;
   updateProduct: (productId: string, updates: Partial<ProductWithUI>) => void;
@@ -34,65 +33,20 @@ const Template = ({
   updateProduct,
   addCoupon,
 }: Props) => {
-  const [showCouponForm, setShowCouponForm] = useState(false);
-  const [showProductForm, setShowProductForm] = useState(false);
+  const {
+    showProductForm,
+    setShowProductForm,
+    editingProduct,
+    setEditingProduct,
+    productForm,
+    setProductForm,
+    startEditProduct,
+    handleProductSubmit,
+  } = useProductForm({ addProduct, updateProduct });
 
-  const [productForm, setProductForm] = useState({
-    name: "",
-    price: 0,
-    stock: 0,
-    description: "",
-    discounts: [] as Array<{ quantity: number; rate: number }>,
+  const { showCouponForm, setShowCouponForm, couponForm, setCouponForm, handleCouponSubmit } = useCouponForm({
+    addCoupon,
   });
-
-  const [couponForm, setCouponForm] = useState({
-    name: "",
-    code: "",
-    discountType: "amount" as "amount" | "percentage",
-    discountValue: 0,
-  });
-
-  const [editingProduct, setEditingProduct] = useState<string | null>(null);
-
-  const startEditProduct = (product: ProductWithUI) => {
-    setEditingProduct(product.id);
-    setProductForm({
-      name: product.name,
-      price: product.price,
-      stock: product.stock,
-      description: product.description || "",
-      discounts: product.discounts || [],
-    });
-    setShowProductForm(true);
-  };
-
-  const handleProductSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editingProduct && editingProduct !== "new") {
-      updateProduct(editingProduct, productForm);
-      setEditingProduct(null);
-    } else {
-      addProduct({
-        ...productForm,
-        discounts: productForm.discounts,
-      });
-    }
-    setProductForm({ name: "", price: 0, stock: 0, description: "", discounts: [] });
-    setEditingProduct(null);
-    setShowProductForm(false);
-  };
-
-  const handleCouponSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    addCoupon(couponForm);
-    setCouponForm({
-      name: "",
-      code: "",
-      discountType: "amount",
-      discountValue: 0,
-    });
-    setShowCouponForm(false);
-  };
 
   return (
     <div className="max-w-6xl mx-auto">
