@@ -15,6 +15,7 @@ type Props = {
   formatPrice: (stock: number, price: number, showDiscounted?: boolean) => string;
   getRemainingStock: (product: ProductWithUI) => number;
   startEditProduct: (product: ProductWithUI) => void;
+  startAddProduct: () => void;
   deleteProduct: (id: string) => void;
   showProductForm: boolean;
   setShowProductForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -36,6 +37,7 @@ const ProductManagement = ({
   formatPrice,
   getRemainingStock,
   startEditProduct,
+  startAddProduct,
   deleteProduct,
   showProductForm,
   setShowProductForm,
@@ -55,11 +57,7 @@ const ProductManagement = ({
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-semibold">상품 목록</h2>
           <button
-            onClick={() => {
-              setEditingProduct("new");
-              setProductForm({ name: "", price: 0, stock: 0, description: "", discounts: [] });
-              setShowProductForm(true);
-            }}
+            onClick={startAddProduct}
             className="px-4 py-2 bg-gray-900 text-white text-sm rounded-md hover:bg-gray-800"
           >
             새 상품 추가

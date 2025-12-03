@@ -41,6 +41,7 @@ const Template = ({
     productForm,
     setProductForm,
     startEditProduct,
+    startAddProduct,
     handleProductSubmit,
     handlePriceChange,
     handlePriceBlur,
@@ -77,6 +78,7 @@ const Template = ({
           formatPrice={formatPrice}
           getRemainingStock={getRemainingStock}
           startEditProduct={startEditProduct}
+          startAddProduct={startAddProduct}
           deleteProduct={deleteProduct}
           showProductForm={showProductForm}
           setShowProductForm={setShowProductForm}
