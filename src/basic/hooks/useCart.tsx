@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { CartItem, Coupon, Product, ProductWithUI } from "../../types";
 import { useLocalStorage } from "./useLocalStorage";
+import {
+  calculateItemTotal as calcItemTotal,
+  calculateCartTotal as calcCartTotal,
+  updateCartItemQuantity,
+} from "../utils/cartCalculations";
 
 type Props = {
   addNotification: (message: string, type?: "error" | "success" | "warning") => void;
@@ -11,57 +16,12 @@ export const useCart = ({ addNotification }: Props) => {
 
   const [cart, setCart] = useLocalStorage<CartItem[]>("cart", []);
 
-  const getMaxApplicableDiscount = (item: CartItem): number => {
-    const { discounts } = item.product;
-    const { quantity } = item;
-
-    const baseDiscount = discounts.reduce((maxDiscount, discount) => {
-      return quantity >= discount.quantity && discount.rate > maxDiscount ? discount.rate : maxDiscount;
-    }, 0);
-
-    const hasBulkPurchase = cart.some((cartItem) => cartItem.quantity >= 10);
-    if (hasBulkPurchase) {
-      return Math.min(baseDiscount + 0.05, 0.5); // 대량 구매 시 추가 5% 할인
-    }
-
-    return baseDiscount;
-  };
-
   const calculateItemTotal = (item: CartItem): number => {
-    const { price } = item.product;
-    const { quantity } = item;
-    const discount = getMaxApplicableDiscount(item);
-
-    return Math.round(price * quantity * (1 - discount));
+    return calcItemTotal(item, cart);
   };
 
-  const calculateCartTotal = (
-    selectedCoupon: Coupon | null
-  ): {
-    totalBeforeDiscount: number;
-    totalAfterDiscount: number;
-  } => {
-    let totalBeforeDiscount = 0;
-    let totalAfterDiscount = 0;
-
-    cart.forEach((item) => {
-      const itemPrice = item.product.price * item.quantity;
-      totalBeforeDiscount += itemPrice;
-      totalAfterDiscount += calculateItemTotal(item);
-    });
-
-    if (selectedCoupon) {
-      if (selectedCoupon.discountType === "amount") {
-        totalAfterDiscount = Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
-      } else {
-        totalAfterDiscount = Math.round(totalAfterDiscount * (1 - selectedCoupon.discountValue / 100));
-      }
-    }
-
-    return {
-      totalBeforeDiscount: Math.round(totalBeforeDiscount),
-      totalAfterDiscount: Math.round(totalAfterDiscount),
-    };
+  const calculateCartTotal = (selectedCoupon: Coupon | null) => {
+    return calcCartTotal(cart, selectedCoupon);
   };
 
   const getRemainingStock = (product: Product): number => {
@@ -107,11 +67,6 @@ export const useCart = ({ addNotification }: Props) => {
 
   const updateQuantity = useCallback(
     (products: Product[], productId: string, newQuantity: number) => {
-      if (newQuantity <= 0) {
-        removeFromCart(productId);
-        return;
-      }
-
       const product = products.find((p) => p.id === productId);
       if (!product) return;
 
@@ -120,12 +75,9 @@ export const useCart = ({ addNotification }: Props) => {
         addNotification(`재고는 ${maxStock}개까지만 있습니다.`, "error");
         return;
       }
-
-      setCart((prevCart) =>
-        prevCart.map((item) => (item.product.id === productId ? { ...item, quantity: newQuantity } : item))
-      );
+      setCart((prevCart) => updateCartItemQuantity(prevCart, productId, newQuantity));
     },
-    [removeFromCart, addNotification, getRemainingStock]
+    [addNotification]
   );
 
   useEffect(() => {
