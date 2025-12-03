@@ -44,16 +44,14 @@ const ShoppingMallTemplate = ({
 }: Props) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-      <div className="lg:col-span-3">
-        {/* 상품 목록 */}
-        <Products
-          products={products}
-          filteredProducts={filteredProducts}
-          debouncedSearchTerm={debouncedSearchTerm}
-          getRemainingStock={getRemainingStock}
-          addToCart={addToCart}
-        />
-      </div>
+      {/* 상품 목록 */}
+      <Products
+        products={products}
+        filteredProducts={filteredProducts}
+        debouncedSearchTerm={debouncedSearchTerm}
+        getRemainingStock={getRemainingStock}
+        addToCart={addToCart}
+      />
 
       <Cart
         products={products}
