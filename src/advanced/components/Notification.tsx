@@ -1,13 +1,8 @@
-import React from "react";
-import { Notification } from "../../types";
+import { useNotificationStore } from "../store/notificationStore";
 
-const Noti = ({
-  notifications,
-  setNotifications,
-}: {
-  notifications: Notification[];
-  setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>;
-}) => {
+const Noti = () => {
+  const notifications = useNotificationStore((state) => state.notifications);
+  const onRemove = useNotificationStore((state) => state.removeNotification);
   if (!notifications || notifications.length === 0) return null;
 
   return (
@@ -20,10 +15,7 @@ const Noti = ({
           }`}
         >
           <span className="mr-2">{notif.message}</span>
-          <button
-            onClick={() => setNotifications((prev) => prev.filter((n) => n.id !== notif.id))}
-            className="text-white hover:text-gray-200"
-          >
+          <button onClick={() => onRemove(notif.id)} className="text-white hover:text-gray-200">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>

@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { ProductWithUI } from "../../types";
 import { validateProductPrice, validateProductStock, isNumericInput } from "../utils/validators";
+import { useNotificationStore } from "../store/notificationStore";
 
 type ProductFormData = {
   name: string;
@@ -13,10 +14,10 @@ type ProductFormData = {
 type Props = {
   addProduct: (newProduct: Omit<ProductWithUI, "id">) => void;
   updateProduct: (productId: string, updates: Partial<ProductWithUI>) => void;
-  addNotification: (message: string, type?: "error" | "success" | "warning") => void;
 };
 
-export const useProductForm = ({ addProduct, updateProduct, addNotification }: Props) => {
+export const useProductForm = ({ addProduct, updateProduct }: Props) => {
+  const addNotification = useNotificationStore((state) => state.addNotification);
   const [showProductForm, setShowProductForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<string | null>(null);
   const [productForm, setProductForm] = useState<ProductFormData>({

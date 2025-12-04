@@ -1,15 +1,16 @@
-import { Product, ProductWithUI } from "../../../types";
+import { ProductWithUI } from "../../../types";
 import ProductCard from "./ProductCard";
+import { useCartStore } from "../../store/cartStore";
 
 type Props = {
   products: ProductWithUI[];
   filteredProducts: ProductWithUI[];
   debouncedSearchTerm: string;
-  getRemainingStock: (product: Product) => number;
-  addToCart: (product: ProductWithUI) => void;
 };
 
-const Products = ({ products, filteredProducts, debouncedSearchTerm, getRemainingStock, addToCart }: Props) => {
+const Products = ({ products, filteredProducts, debouncedSearchTerm }: Props) => {
+  const getRemainingStock = useCartStore((state) => state.getRemainingStock);
+  const addToCart = useCartStore((state) => state.addToCart);
   return (
     <div className="lg:col-span-3">
       <section>

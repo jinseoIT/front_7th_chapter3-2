@@ -16,7 +16,6 @@ type Props = {
   handleCouponSubmit: (e: React.FormEvent) => void;
   couponForm: CouponFormType;
   setCouponForm: React.Dispatch<React.SetStateAction<CouponFormType>>;
-  addNotification: (message: string, type?: "error" | "success" | "warning") => void;
   handleDiscountValueChange: (value: string) => void;
   handleDiscountValueBlur: (value: string, discountType: "amount" | "percentage") => void;
 };
@@ -29,7 +28,6 @@ const CouponManagement = ({
   handleCouponSubmit,
   couponForm,
   setCouponForm,
-  addNotification,
   handleDiscountValueChange,
   handleDiscountValueBlur,
 }: Props) => {

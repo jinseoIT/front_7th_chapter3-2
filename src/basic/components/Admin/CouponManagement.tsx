@@ -29,7 +29,6 @@ const CouponManagement = ({
   handleCouponSubmit,
   couponForm,
   setCouponForm,
-  addNotification,
   handleDiscountValueChange,
   handleDiscountValueBlur,
 }: Props) => {

@@ -1,4 +1,5 @@
 import React from "react";
+import { useCartStore } from "../store/cartStore";
 
 type Props = {
   isAdmin: boolean;
@@ -6,10 +7,10 @@ type Props = {
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
   setIsAdmin: React.Dispatch<React.SetStateAction<boolean>>;
   totalItemCount: number;
-  cart: any[];
-}
+};
 
-const Header = ({ isAdmin, searchTerm, setSearchTerm, setIsAdmin, totalItemCount, cart }: Props) => {
+const Header = ({ isAdmin, searchTerm, setSearchTerm, setIsAdmin, totalItemCount }: Props) => {
+  const cart = useCartStore((state) => state.cart);
   return (
     <header className="bg-white shadow-sm sticky top-0 z-40 border-b">
       <div className="max-w-7xl mx-auto px-4">

@@ -1,41 +1,28 @@
 import { useCallback } from "react";
-import { CartItem, Coupon, Product, ProductWithUI } from "../../../types";
+import { CartItem, Coupon } from "../../../types";
 import CartItemComponent from "./CartItem";
 import CouponSelector from "./CouponSelector";
 import OrderSummary from "./OrderSummary";
+import { useCartStore } from "../../store/cartStore";
+import { useCouponStore } from "../../store/couponStore";
 
 type Props = {
-  products: ProductWithUI[];
   cart: CartItem[];
   coupons: Coupon[];
-  selectedCoupon: Coupon | null;
-  totals: {
-    totalBeforeDiscount: number;
-    totalAfterDiscount: number;
-  };
-  applyCoupon: (coupon: Coupon, cartTotal: number) => void;
-  setSelectedCoupon: (coupon: Coupon | null) => void;
-  calculateItemTotal: (item: CartItem) => number;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (products: Product[], productId: string, quantity: number) => void;
-  addNotification: (message: string, type?: "error" | "success" | "warning") => void;
-  completeOrder: (onSuccess?: () => void) => void;
 };
 
-const Cart = ({
-  products,
-  cart,
-  coupons,
-  selectedCoupon,
-  totals,
-  applyCoupon,
-  setSelectedCoupon,
-  calculateItemTotal,
-  removeFromCart,
-  updateQuantity,
-  addNotification,
-  completeOrder,
-}: Props) => {
+const Cart = ({ cart, coupons }: Props) => {
+  const selectedCoupon = useCouponStore((state) => state.selectedCoupon);
+  const applyCoupon = useCouponStore((state) => state.applyCoupon);
+  const setSelectedCoupon = useCouponStore((state) => state.setSelectedCoupon);
+
+  const calculateItemTotal = useCartStore((state) => state.calculateItemTotal);
+  const calculateCartTotal = useCartStore((state) => state.calculateCartTotal);
+  const removeFromCart = useCartStore((state) => state.removeFromCart);
+  const updateQuantity = useCartStore((state) => state.updateQuantity);
+  const completeOrder = useCartStore((state) => state.completeOrder);
+
+  const totals = calculateCartTotal(selectedCoupon);
   const handleCompleteOrder = useCallback(() => {
     completeOrder(() => {
       setSelectedCoupon(null);
@@ -80,7 +67,6 @@ const Cart = ({
                 <CartItemComponent
                   key={item.product.id}
                   item={item}
-                  products={products}
                   calculateItemTotal={calculateItemTotal}
                   onRemove={removeFromCart}
                   onUpdateQuantity={updateQuantity}

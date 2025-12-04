@@ -1,14 +1,13 @@
-import { CartItem as CartItemType, Product } from "../../../types";
+import { CartItem as CartItemType } from "../../../types";
 
 type Props = {
   item: CartItemType;
-  products: Product[];
   calculateItemTotal: (item: CartItemType) => number;
   onRemove: (productId: string) => void;
-  onUpdateQuantity: (products: Product[], productId: string, quantity: number) => void;
+  onUpdateQuantity: (productId: string, quantity: number) => void;
 };
 
-const CartItem = ({ item, products, calculateItemTotal, onRemove, onUpdateQuantity }: Props) => {
+const CartItem = ({ item, calculateItemTotal, onRemove, onUpdateQuantity }: Props) => {
   const itemTotal = calculateItemTotal(item);
   const originalPrice = item.product.price * item.quantity;
   const hasDiscount = itemTotal < originalPrice;
@@ -27,14 +26,14 @@ const CartItem = ({ item, products, calculateItemTotal, onRemove, onUpdateQuanti
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <button
-            onClick={() => onUpdateQuantity(products, item.product.id, item.quantity - 1)}
+            onClick={() => onUpdateQuantity(item.product.id, item.quantity - 1)}
             className="w-6 h-6 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100"
           >
             <span className="text-xs">−</span>
           </button>
           <span className="mx-3 text-sm font-medium w-8 text-center">{item.quantity}</span>
           <button
-            onClick={() => onUpdateQuantity(products, item.product.id, item.quantity + 1)}
+            onClick={() => onUpdateQuantity(item.product.id, item.quantity + 1)}
             className="w-6 h-6 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100"
           >
             <span className="text-xs">+</span>

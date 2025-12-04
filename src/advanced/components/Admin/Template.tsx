@@ -1,38 +1,31 @@
 import { formatPrice } from "../../utils/formatters";
-import { Coupon, ProductWithUI } from "../../../types";
 import ProductManagement from "./ProductManagement";
 import CouponManagement from "./CouponManagement";
 import AdminTabBar from "./AdminTabBar";
 import { useProductForm } from "../../hooks/useProductForm";
 import { useCouponForm } from "../../hooks/useCouponForm";
+import { useProductStore } from "../../store/productStore";
+import { useCouponStore } from "../../store/couponStore";
+import { useCartStore } from "../../store/cartStore";
 
 type Props = {
-  products: ProductWithUI[];
-  coupons: Coupon[];
-  deleteCoupon: (id: string) => void;
   activeTab: "products" | "coupons";
-  getRemainingStock: (product: ProductWithUI) => number;
   setActiveTab: React.Dispatch<React.SetStateAction<"products" | "coupons">>;
-  deleteProduct: (id: string) => void;
-  addNotification: (message: string, type?: "error" | "success" | "warning") => void;
-  addProduct: (newProduct: Omit<ProductWithUI, "id">) => void;
-  updateProduct: (productId: string, updates: Partial<ProductWithUI>) => void;
-  addCoupon: (newCoupon: Coupon) => void;
 };
 
-const Template = ({
-  products,
-  coupons,
-  getRemainingStock,
-  deleteCoupon,
-  activeTab,
-  setActiveTab,
-  deleteProduct,
-  addNotification,
-  addProduct,
-  updateProduct,
-  addCoupon,
-}: Props) => {
+const Template = ({ activeTab, setActiveTab }: Props) => {
+  // Store에서 데이터 가져오기
+  const products = useProductStore((state) => state.products);
+  const addProduct = useProductStore((state) => state.addProduct);
+  const updateProduct = useProductStore((state) => state.updateProduct);
+  const deleteProduct = useProductStore((state) => state.deleteProduct);
+
+  const coupons = useCouponStore((state) => state.coupons);
+  const addCoupon = useCouponStore((state) => state.addCoupon);
+  const deleteCoupon = useCouponStore((state) => state.deleteCoupon);
+
+  const getRemainingStock = useCartStore((state) => state.getRemainingStock);
+
   const {
     showProductForm,
     setShowProductForm,
@@ -47,7 +40,7 @@ const Template = ({
     handlePriceBlur,
     handleStockChange,
     handleStockBlur,
-  } = useProductForm({ addProduct, updateProduct, addNotification });
+  } = useProductForm({ addProduct, updateProduct });
 
   const {
     showCouponForm,
@@ -59,7 +52,6 @@ const Template = ({
     handleDiscountValueBlur,
   } = useCouponForm({
     addCoupon,
-    addNotification,
   });
 
   return (
@@ -87,7 +79,6 @@ const Template = ({
           setProductForm={setProductForm}
           editingProduct={editingProduct}
           setEditingProduct={setEditingProduct}
-          addNotification={addNotification}
           handlePriceChange={handlePriceChange}
           handlePriceBlur={handlePriceBlur}
           handleStockChange={handleStockChange}
@@ -102,7 +93,6 @@ const Template = ({
           handleCouponSubmit={handleCouponSubmit}
           couponForm={couponForm}
           setCouponForm={setCouponForm}
-          addNotification={addNotification}
           handleDiscountValueChange={handleDiscountValueChange}
           handleDiscountValueBlur={handleDiscountValueBlur}
         />

@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { Coupon } from "../../types";
 import { validateCouponDiscount, isNumericInput } from "../utils/validators";
+import { useNotificationStore } from "../store/notificationStore";
 
 type CouponFormData = {
   name: string;
@@ -11,10 +12,10 @@ type CouponFormData = {
 
 type Props = {
   addCoupon: (newCoupon: Coupon) => void;
-  addNotification: (message: string, type?: "error" | "success" | "warning") => void;
 };
 
-export const useCouponForm = ({ addCoupon, addNotification }: Props) => {
+export const useCouponForm = ({ addCoupon }: Props) => {
+  const addNotification = useNotificationStore((state) => state.addNotification);
   const [showCouponForm, setShowCouponForm] = useState(false);
   const [couponForm, setCouponForm] = useState<CouponFormData>({
     name: "",

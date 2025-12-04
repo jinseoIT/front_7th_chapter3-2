@@ -38,7 +38,6 @@ const App = () => {
 
   const totals = calculateCartTotal(selectedCoupon);
 
-  // 순수 함수를 사용하여 상품 필터링
   const filteredProductList = filterProducts(products, debouncedSearchTerm);
 
   return (

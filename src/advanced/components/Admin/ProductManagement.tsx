@@ -24,7 +24,6 @@ type Props = {
   setProductForm: React.Dispatch<React.SetStateAction<ProductFormType>>;
   editingProduct: string | null;
   setEditingProduct: React.Dispatch<React.SetStateAction<string | null>>;
-  addNotification: (message: string, type?: "error" | "success" | "warning") => void;
   handlePriceChange: (value: string) => void;
   handlePriceBlur: (value: string) => void;
   handleStockChange: (value: string) => void;
